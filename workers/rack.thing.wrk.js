@@ -1076,6 +1076,17 @@ class WrkProcVar extends TetherWrkBase {
     return res
   }
 
+  getThingsCount (req) {
+    let things = Object.values(this.mem.things)
+
+    if (req.query) {
+      const query = new mingo.Query(req.query)
+      things = query.find(things).all()
+    }
+
+    return things.length
+  }
+
   getRack (req) {
     return {
       id: this.rackId,

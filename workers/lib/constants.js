@@ -11,6 +11,7 @@ const RPC_METHODS = [
   'getRack',
   'queryThing',
   'listThings',
+  'getThingsCount',
   'registerThing',
   'updateThing',
   'saveThingComment',
