@@ -3,6 +3,24 @@
 const test = require('brittle')
 const BaseThing = require('../../workers/lib/base')
 
+class BaseThingSnapOk extends BaseThing {
+  async _prepSnap () {
+    return { stats: { status: 'ok' }, config: { a: 1 } }
+  }
+}
+
+class BaseThingSnapFail extends BaseThing {
+  async _prepSnap () {
+    throw new Error('ERR_SNAP_FAIL')
+  }
+}
+
+class BaseThingSnapOffline extends BaseThing {
+  async _prepSnap () {
+    throw new Error('ERR_OFFLINE')
+  }
+}
+
 test('BaseThing: constructor', async t => {
   const thing = new BaseThing('test-type', { lastSeenTimeout: 5000 })
 
@@ -97,4 +115,55 @@ test('BaseThing: getRealtimeData returns lastSnap', async t => {
 
   const result = await thing.getRealtimeData()
   t.is(result, mockSnap)
+})
+
+test('BaseThing: debugError with alert uses console.error', async t => {
+  const thing = new BaseThing('test-type', {})
+  const original = console.error
+  let called = false
+  console.error = (...args) => {
+    called = true
+    t.ok(args.length >= 1)
+  }
+  thing.debugError('ctx', new Error('e'), true)
+  console.error = original
+  t.ok(called)
+})
+
+test('BaseThing: getSnap success', async t => {
+  const thing = new BaseThingSnapOk('test-type', {})
+  thing._handleErrorUpdates(['e1'])
+  const snap = await thing.getSnap()
+  t.ok(snap.success)
+  t.alike(snap.raw_errors, ['e1'])
+  t.is(snap.stats.status, 'ok')
+  t.is(snap.config.a, 1)
+  t.is(thing.lastSnap, snap)
+})
+
+test('BaseThing: getSnap error while online', async t => {
+  const thing = new BaseThingSnapFail('test-type', { lastSeenTimeout: 60000 })
+  thing.updateLastSeen()
+  const snap = await thing.getSnap()
+  t.not(snap.success)
+  t.is(snap.stats.status, 'error')
+  t.ok(Array.isArray(snap.stats.errors))
+  t.is(snap.stats.errors[0].msg, 'ERR_SNAP_FAIL')
+})
+
+test('BaseThing: getSnap ERR_OFFLINE while online maps to offline', async t => {
+  const thing = new BaseThingSnapOffline('test-type', { lastSeenTimeout: 60000 })
+  thing.updateLastSeen()
+  const snap = await thing.getSnap()
+  t.not(snap.success)
+  t.is(snap.stats.status, 'offline')
+})
+
+test('BaseThing: getSnap error while timed out', async t => {
+  const thing = new BaseThingSnapFail('test-type', { lastSeenTimeout: 50 })
+  thing.updateLastSeen()
+  await new Promise(resolve => setTimeout(resolve, 80))
+  const snap = await thing.getSnap()
+  t.not(snap.success)
+  t.is(snap.stats.status, 'offline')
 })

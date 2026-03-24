@@ -1,7 +1,8 @@
 'use strict'
 
 const test = require('brittle')
-const { aggrStats } = require('../../workers/lib/wrk-fun-stats')
+const proxyquire = require('proxyquire')
+const { aggrStats, buildStats } = require('../../workers/lib/wrk-fun-stats')
 
 test('wrk-fun-stats: aggrStats with no things', async t => {
   const mockWorker = {
@@ -97,4 +98,79 @@ test('wrk-fun-stats: aggrStats with things parameter', async t => {
 
   const result = aggrStats.call(mockWorker, ['thing1'], {}, things)
   t.alike(result, {})
+})
+
+test('wrk-fun-stats: buildStats skips on slave', async t => {
+  const w = { ctx: { slave: true } }
+  await buildStats.call(w, 'logk', new Date())
+  t.pass()
+})
+
+test('wrk-fun-stats: buildStats skips when stats lib missing', async t => {
+  const w = { ctx: {}, loadLib: (name) => (name === 'stats' ? null : {}) }
+  await buildStats.call(w, 'logk', new Date())
+  t.pass()
+})
+
+test('wrk-fun-stats: buildStats skips when already building', async t => {
+  const w = {
+    ctx: {},
+    loadLib: () => ({ specs: {}, conf: {} }),
+    mem: { things: {} },
+    _buildingStats_logk: true
+  }
+  await buildStats.call(w, 'logk', new Date())
+  t.pass()
+})
+
+test('wrk-fun-stats: _buildStats skips tags with skipTagPrefixes', async t => {
+  const fireTime = new Date('2025-06-01T12:00:00.000Z')
+  const w = {
+    ctx: {},
+    loadLib: (name) =>
+      name === 'stats'
+        ? { specs: {}, conf: { skipTagPrefixes: ['t-'] } }
+        : {},
+    mem: {
+      things: {
+        th1: { id: 'th1', tags: ['t-miner'] }
+      }
+    }
+  }
+  await buildStats.call(w, 'agg', fireTime)
+  t.pass()
+})
+
+test('wrk-fun-stats: _buildStats debugError when log put fails', async t => {
+  const buildStatsStub = proxyquire('../../workers/lib/wrk-fun-stats', {
+    './wrk-fun-logs': {
+      getBeeTimeLog: async () => ({
+        put: async () => {
+          throw new Error('put-fail')
+        }
+      }),
+      releaseBeeTimeLog: async () => {}
+    }
+  }).buildStats
+
+  let saw = null
+  const fireTime = new Date('2025-06-01T12:00:00.000Z')
+  const w = {
+    ctx: {},
+    loadLib: (name) =>
+      name === 'stats' ? { specs: {}, conf: {} } : {},
+    getSpecTags: () => [],
+    mem: {
+      things: {
+        th1: { id: 'th1', tags: ['miner-tag'] }
+      }
+    },
+    debugError: (_ctx, err) => {
+      saw = err
+    }
+  }
+
+  await buildStatsStub.call(w, 'stat', fireTime)
+  t.ok(saw)
+  t.is(saw.message, 'put-fail')
 })

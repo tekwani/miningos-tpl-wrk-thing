@@ -9,7 +9,8 @@ const {
   rotateLogs,
   getBeeTimeLog,
   releaseBeeTimeLog,
-  refreshLogsCache
+  refreshLogsCache,
+  saveLogData
 } = require('../../workers/lib/wrk-fun-logs')
 const utilsStore = require('hp-svc-facs-store/utils')
 const { getLogMaxHeight } = require('../../workers/lib/utils')
@@ -97,6 +98,20 @@ test('lib:wrk-fun-logs', async (main) => {
     t.ok(log)
     t.ok(log.discoveryKey)
     t.is(log.opened, true)
+  })
+
+  await main.test('saveLogData writes entry and releases log', async (t) => {
+    const logName = getLogName()
+    const ts = Date.now()
+    await saveLogData.call(thingWorker, logName, ts, { v: 1 }, 0, true)
+    const log = await getBeeTimeLog.call(thingWorker, logName, 0, false)
+    t.ok(log)
+    const kts = utilsStore.convIntToBin(ts)
+    const entry = await log.get(kts)
+    t.ok(entry)
+    const row = JSON.parse(entry.value.toString())
+    t.is(row.v, 1)
+    await releaseBeeTimeLog.call(thingWorker, log)
   })
 
   await main.test('getBeeTimeLog: get existing bee log', async (t) => {

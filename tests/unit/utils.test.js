@@ -4,7 +4,12 @@ const test = require('brittle')
 
 const {
   getLogsCountForTimeRange,
-  getJsonChanges
+  getJsonChanges,
+  isValidSnap,
+  isOffline,
+  getLogMaxHeight,
+  aggregateLogs,
+  getThingSorter
 } = require('../../workers/lib/utils')
 
 const DEFAULT_TIMEFRAMES = [
@@ -14,6 +19,8 @@ const DEFAULT_TIMEFRAMES = [
   ['3h', '0 0 */3 * * *'],
   ['1D', '0 0 0 * * *']
 ]
+
+const TWO_HOUR_TIMEFRAMES = [['2h', '0 0 */2 * * *']]
 
 test('getLogsCountForTimeRange: handles no date range', async t => {
   const result = getLogsCountForTimeRange(
@@ -64,6 +71,120 @@ test('getLogsCountForTimeRange: no logs for invalid key', async t => {
     DEFAULT_TIMEFRAMES
   )
   t.is(result, 0)
+})
+
+test('getLogsCountForTimeRange: hour-style cron uses hour interval', async t => {
+  const start = 0
+  const end = 4 * 60 * 60 * 1000
+  const result = getLogsCountForTimeRange(start, end, 'stat-2h', TWO_HOUR_TIMEFRAMES)
+  t.ok(result >= 3)
+})
+
+test('isValidSnap and isOffline', async t => {
+  t.ok(isValidSnap({ stats: { a: 1 }, config: { b: 2 } }))
+  t.absent(isValidSnap({ stats: {} }))
+
+  t.ok(isOffline({ stats: {} }))
+  t.ok(isOffline({ stats: { status: 'offline' } }))
+  t.absent(isOffline({ stats: { status: 'running' } }))
+})
+
+test('getLogMaxHeight', async t => {
+  t.is(getLogMaxHeight(4), 6)
+})
+
+test('aggregateLogs: sum and avg across buckets', async t => {
+  const base = 1_700_000_000_000
+  const logs = [
+    { ts: base, cpu: 10 },
+    { ts: base + 30 * 60 * 1000, cpu: 20 },
+    { ts: base + 2 * 60 * 60 * 1000, cpu: 5 }
+  ]
+  const sum = aggregateLogs(logs, '1H', false)
+  t.ok(sum.length >= 1)
+  const avg = aggregateLogs(logs, '1H', true)
+  t.ok(avg.length >= 1)
+})
+
+test('aggregateLogs: nested numeric fields aggregate', async t => {
+  const ts = 1_700_000_000_000
+  const logs = [
+    { ts, m: { a: 1, b: 2 } },
+    { ts: ts + 1000, m: { a: 3, b: 4 } }
+  ]
+  const out = aggregateLogs(logs, '1D', false)
+  t.ok(out.length >= 1)
+})
+
+test('aggregateLogs: nested non-numeric fields keep first value', async t => {
+  const ts = 1_700_000_000_000
+  const logs = [
+    { ts, m: { label: 'alpha' } },
+    { ts: ts + 1000, m: { label: 'beta' } }
+  ]
+  const out = aggregateLogs(logs, '1D', false)
+  t.ok(out.length >= 1)
+  t.is(out[0].m.label, 'alpha')
+})
+
+test('aggregateLogs: invalid group range throws', async t => {
+  await t.exception(async () => {
+    aggregateLogs([{ ts: 1, v: 1 }], 'bogus', false)
+  }, /ERR_INVALID_GROUP_RANGE/)
+})
+
+test('getThingSorter: empty sortBy', async t => {
+  t.is(getThingSorter({ a: 1 }, { b: 2 }, {}), 1)
+  t.is(getThingSorter({ a: 1 }, { b: 2 }, null), 1)
+})
+
+test('getThingSorter: natural order and descending', async t => {
+  const asc = getThingSorter(
+    { info: { id: 'rack-2' } },
+    { info: { id: 'rack-10' } },
+    { 'info.id': 1 }
+  )
+  t.ok(asc < 0)
+  const desc = getThingSorter(
+    { info: { id: 'rack-2' } },
+    { info: { id: 'rack-10' } },
+    { 'info.id': -1 }
+  )
+  t.ok(desc > 0)
+})
+
+test('getThingSorter: undefined key ordering', async t => {
+  const r = getThingSorter(
+    { info: { id: 'a' } },
+    { info: {} },
+    { 'info.id': 1 }
+  )
+  t.ok(r !== 0)
+})
+
+test('getThingSorter: equal values return 0', async t => {
+  t.is(
+    getThingSorter(
+      { info: { id: 'same' } },
+      { info: { id: 'same' } },
+      { 'info.id': 1 }
+    ),
+    0
+  )
+})
+
+test('getThingSorter: length diff of tokenized strings', async t => {
+  const r = getThingSorter({ k: 'ab' }, { k: 'a' }, { k: 1 })
+  t.ok(r !== 0)
+})
+
+test('getThingSorter: second sort key breaks tie', async t => {
+  const r = getThingSorter(
+    { a: { x: 1, y: 1 } },
+    { a: { x: 1, y: 2 } },
+    { 'a.x': 1, 'a.y': 1 }
+  )
+  t.ok(r < 0)
 })
 
 test('getJsonChanges', async main => {

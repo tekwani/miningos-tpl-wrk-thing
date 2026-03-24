@@ -194,3 +194,90 @@ test('wrk-fun-alerts: processThingAlerts returns null when no alerts', async t =
   const result = processThingAlerts.call(mockWorker, thing)
   t.is(result, null)
 })
+
+test('wrk-fun-alerts: error_snap reuses uuid from previous alerts', async t => {
+  const prevUuid = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
+  const mockWorker = {
+    loadLib: () => ({ specs: {} }),
+    conf: { thing: { alerts: { miner: {} } } },
+    getSpecTags: () => []
+  }
+  const thing = {
+    type: 'miner',
+    last: {
+      err: 'No snap',
+      alerts: [{
+        name: 'error_snap',
+        description: 'No snap',
+        message: undefined,
+        createdAt: 4242,
+        uuid: prevUuid
+      }]
+    }
+  }
+  const result = processThingAlerts.call(mockWorker, thing)
+  t.is(result[0].uuid, prevUuid)
+  t.is(result[0].createdAt, 4242)
+})
+
+test('wrk-fun-alerts: ignores spec tags without specs entry', async t => {
+  const mockWorker = {
+    loadLib: () => ({
+      specs: {
+        miner: {
+          a: { valid: () => true, probe: () => ({}) }
+        }
+      }
+    }),
+    conf: {
+      thing: {
+        alerts: {
+          miner: { a: { name: 'A', code: 'A', description: 'd', severity: 'low' } }
+        }
+      }
+    },
+    getSpecTags: () => ['other', 'miner']
+  }
+  const thing = {
+    type: 'miner',
+    last: { snap: { success: true } },
+    info: {},
+    id: 'id1'
+  }
+  const result = processThingAlerts.call(mockWorker, thing)
+  t.ok(Array.isArray(result))
+  t.ok(result.length >= 1)
+})
+
+test('wrk-fun-alerts: valid false skips probe', async t => {
+  const mockWorker = {
+    loadLib: () => ({
+      specs: {
+        miner: {
+          quiet: {
+            valid: () => false,
+            probe: () => {
+              throw new Error('probe must not run')
+            }
+          }
+        }
+      }
+    }),
+    conf: {
+      thing: {
+        alerts: {
+          miner: { quiet: { name: 'Q', code: 'Q', description: 'd', severity: 'low' } }
+        }
+      }
+    },
+    getSpecTags: () => ['miner']
+  }
+  const thing = {
+    type: 'miner',
+    last: { snap: { success: true } },
+    info: {},
+    id: 'id1'
+  }
+  const result = processThingAlerts.call(mockWorker, thing)
+  t.is(result, null)
+})
