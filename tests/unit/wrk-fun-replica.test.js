@@ -190,3 +190,92 @@ test('wrk-fun-replica: startReplica successfully', async t => {
   t.is(result, undefined)
   t.is(mockWorker._replicating, true)
 })
+
+test('wrk-fun-replica: startReplica wires swarm replicate', async t => {
+  let connHandler = null
+  const worker = {
+    _replicating: false,
+    net_r0: {
+      startSwarm: async () => {},
+      swarm: {
+        join: (buf, opts) => {
+          t.ok(Buffer.isBuffer(buf))
+          t.ok(opts.server && opts.client)
+        },
+        on: (ev, fn) => {
+          t.is(ev, 'connection')
+          connHandler = fn
+        }
+      }
+    },
+    store_s1: {
+      store: {
+        replicate: (conn) => {
+          t.is(conn, 'conn')
+        }
+      }
+    }
+  }
+  await startReplica.call(worker, 'cafe')
+  t.ok(connHandler)
+  connHandler('conn', {})
+})
+
+test('wrk-fun-replica: refreshReplicaConf success persists and starts replica', async t => {
+  const worker = {
+    conf: {
+      thing: { replicaRpcPublicKey: 'rpc-pub' }
+    },
+    net_r0: {
+      jRequest: async (pub, method, body, opts) => {
+        t.is(pub, 'rpc-pub')
+        t.is(method, 'getReplicaConf')
+        t.ok(opts && opts.timeout === 10000)
+        return { replicaDiscoveryKey: 'cafe', metaDiscoveryKeys: {} }
+      },
+      startSwarm: async () => {},
+      swarm: {
+        join: () => {},
+        on: () => {}
+      }
+    },
+    mem: {},
+    status: {},
+    saveStatus () {
+      t.alike(this.status.replica_conf, this.mem.replica_conf)
+    },
+    store_s1: { store: { replicate: () => {} } },
+    debugError: () => t.fail('should not debugError on success')
+  }
+  const code = await refreshReplicaConf.call(worker)
+  t.is(code, 1)
+  t.is(worker.mem.replica_conf.replicaDiscoveryKey, 'cafe')
+  t.ok(worker._replicating)
+})
+
+test('wrk-fun-replica: getReplicaConf skips negative point', async t => {
+  const worker = {
+    conf: {
+      thing: { replicaDiscoveryKey: 'dk', logKeepCount: 2 }
+    },
+    meta_logs: {
+      createReadStream: async function * () {
+        yield { key: 'log-a', value: Buffer.from(JSON.stringify({ cur: 0 })) }
+      }
+    },
+    db: { core: { key: Buffer.from('main') } }
+  }
+  const calls = []
+  const lWrkFunLogs = {
+    getBeeTimeLog: async function (name, offset) {
+      calls.push([name, offset])
+      if (offset === 0) {
+        return { core: { key: Buffer.from('k0') } }
+      }
+      return { core: { key: Buffer.from('k1') } }
+    }
+  }
+  const res = await getReplicaConf.call(worker, {}, lWrkFunLogs)
+  t.is(res.replicaDiscoveryKey, 'dk')
+  t.ok(calls.length > 0)
+})
