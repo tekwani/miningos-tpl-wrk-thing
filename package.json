@@ -1,7 +1,8 @@
 {
   "name": "@tetherto/miningos-tpl-wrk-thing",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "MiningOS Template Worker Thing",
+  "main": "worker.js",
   "keywords": [
     "tether"
   ],
@@ -11,9 +12,18 @@
     "type": "git",
     "url": "git+https://github.com/tetherto/miningos-tpl-wrk-thing.git"
   },
-  "engine": {
-    "node": ">=20.0"
+  "homepage": "https://github.com/tetherto/miningos-tpl-wrk-thing#readme",
+  "bugs": {
+    "url": "https://github.com/tetherto/miningos-tpl-wrk-thing/issues"
   },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "worker.js",
+    "workers/"
+  ],
+  "type": "commonjs",
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
