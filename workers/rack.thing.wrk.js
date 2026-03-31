@@ -979,6 +979,10 @@ class WrkProcVar extends TetherWrkBase {
     }, 0)
   }
 
+  async _queryThingHook () {
+    // no op
+  }
+
   async queryThing (req) {
     const thg = this.mem.things[req.id]
 
@@ -995,6 +999,7 @@ class WrkProcVar extends TetherWrkBase {
     }
 
     const res = await thg.ctrl[req.method](...req.params)
+    await this._queryThingHook(req, res)
     return res
   }
 
