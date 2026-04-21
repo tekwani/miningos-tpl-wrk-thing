@@ -1,0 +1,1215 @@
+{
+  "openrpc": "1.4.1",
+  "info": {
+    "title": "MiningOS Thing Worker API",
+    "version": "1.0.0",
+    "description": "JSON-RPC 2.0 API for managing Things in MiningOS",
+    "license": {
+      "name": "Apache-2.0"
+    }
+  },
+  "methods": [
+    {
+      "name": "getRack",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/GetRackParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "getRackResult",
+        "schema": {
+          "$ref": "#/components/schemas/GetRackResult"
+        }
+      }
+    },
+    {
+      "name": "queryThing",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/QueryThingParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "queryThingResult",
+        "schema": {
+          "$ref": "#/components/schemas/QueryThingResult"
+        }
+      }
+    },
+    {
+      "name": "listThings",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/ListThingsParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "listThingsResult",
+        "schema": {
+          "$ref": "#/components/schemas/ListThingsResult"
+        }
+      }
+    },
+    {
+      "name": "getThingsCount",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/GetThingsCountParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "getThingsCountResult",
+        "schema": {
+          "$ref": "#/components/schemas/GetThingsCountResult"
+        }
+      }
+    },
+    {
+      "name": "registerThing",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/RegisterThingParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "registerThingResult",
+        "schema": {
+          "$ref": "#/components/schemas/RegisterThingResult"
+        }
+      }
+    },
+    {
+      "name": "updateThing",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/UpdateThingParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "updateThingResult",
+        "schema": {
+          "$ref": "#/components/schemas/UpdateThingResult"
+        }
+      }
+    },
+    {
+      "name": "saveThingComment",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/SaveThingCommentParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "saveThingCommentResult",
+        "schema": {
+          "$ref": "#/components/schemas/SaveThingCommentResult"
+        }
+      }
+    },
+    {
+      "name": "editThingComment",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/EditThingCommentParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "editThingCommentResult",
+        "schema": {
+          "$ref": "#/components/schemas/EditThingCommentResult"
+        }
+      }
+    },
+    {
+      "name": "deleteThingComment",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/DeleteThingCommentParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "deleteThingCommentResult",
+        "schema": {
+          "$ref": "#/components/schemas/DeleteThingCommentResult"
+        }
+      }
+    },
+    {
+      "name": "forgetThings",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/ForgetThingsParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "forgetThingsResult",
+        "schema": {
+          "$ref": "#/components/schemas/ForgetThingsResult"
+        }
+      }
+    },
+    {
+      "name": "applyThings",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/ApplyThingsParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "applyThingsResult",
+        "schema": {
+          "$ref": "#/components/schemas/ApplyThingsResult"
+        }
+      }
+    },
+    {
+      "name": "tailLog",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/TailLogParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "tailLogResult",
+        "schema": {
+          "$ref": "#/components/schemas/TailLogResult"
+        }
+      }
+    },
+    {
+      "name": "getHistoricalLogs",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/GetHistoricalLogsParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "getHistoricalLogsResult",
+        "schema": {
+          "$ref": "#/components/schemas/GetHistoricalLogsResult"
+        }
+      }
+    },
+    {
+      "name": "getReplicaConf",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/GetReplicaConfParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "getReplicaConfResult",
+        "schema": {
+          "$ref": "#/components/schemas/GetReplicaConfResult"
+        }
+      }
+    },
+    {
+      "name": "rackReboot",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/RackRebootParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "rackRebootResult",
+        "schema": {
+          "$ref": "#/components/schemas/RackRebootResult"
+        }
+      }
+    },
+    {
+      "name": "getWrkExtData",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/GetWrkExtDataParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "getWrkExtDataResult",
+        "schema": {
+          "$ref": "#/components/schemas/GetWrkExtDataResult"
+        }
+      }
+    },
+    {
+      "name": "getWrkConf",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/GetWrkConfParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "getWrkConfResult",
+        "schema": {
+          "$ref": "#/components/schemas/GetWrkConfResult"
+        }
+      }
+    },
+    {
+      "name": "getThingConf",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/GetThingConfParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "getThingConfResult",
+        "schema": {
+          "$ref": "#/components/schemas/GetThingConfResult"
+        }
+      }
+    },
+    {
+      "name": "getWrkSettings",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/GetWrkSettingsParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "getWrkSettingsResult",
+        "schema": {
+          "$ref": "#/components/schemas/GetWrkSettingsResult"
+        }
+      }
+    },
+    {
+      "name": "saveWrkSettings",
+      "params": [
+        {
+          "name": "req",
+          "schema": {
+            "$ref": "#/components/schemas/SaveWrkSettingsParams"
+          }
+        }
+      ],
+      "result": {
+        "name": "saveWrkSettingsResult",
+        "schema": {
+          "$ref": "#/components/schemas/SaveWrkSettingsResult"
+        }
+      }
+    }
+  ],
+  "components": {
+    "schemas": {
+      "GetRackParams": {
+        "description": "Parameters for `getRack` RPC method"
+      },
+      "Rack": {
+        "additionalProperties": false,
+        "description": "Rack information",
+        "properties": {
+          "id": {
+            "description": "Rack identifier",
+            "type": "string"
+          },
+          "rpcPubKey": {
+            "description": "RPC server public key (hex encoded)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "rpcPubKey"
+        ],
+        "type": "object"
+      },
+      "GetRackResult": {
+        "$ref": "#/components/schemas/Rack",
+        "description": "Result for `getRack` RPC method."
+      },
+      "QueryThingParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `queryThing` RPC method",
+        "properties": {
+          "id": {
+            "description": "Thing ID",
+            "type": "string"
+          },
+          "method": {
+            "description": "Method name to execute on thing controller",
+            "type": "string"
+          },
+          "params": {
+            "description": "Parameters to pass to the method",
+            "items": {},
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "method",
+          "params"
+        ],
+        "type": "object"
+      },
+      "QueryThingResult": {
+        "description": "Result for `queryThing` RPC method. Polymorphic: the `method` parameter dispatches to a controller method on the target thing, so the response shape depends entirely on that controller. Intentionally untyped."
+      },
+      "FieldProjection": {
+        "additionalProperties": {
+          "enum": [
+            0,
+            1
+          ],
+          "type": "number"
+        },
+        "description": "Field projection for query results",
+        "type": "object"
+      },
+      "MongoQuery": {
+        "description": "MongoDB-style query object for filtering things"
+      },
+      "SortCriteria": {
+        "additionalProperties": {
+          "enum": [
+            1,
+            -1
+          ],
+          "type": "number"
+        },
+        "description": "Sort criteria for query results",
+        "type": "object"
+      },
+      "ListThingsParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `listThings` RPC method",
+        "properties": {
+          "fields": {
+            "$ref": "#/components/schemas/FieldProjection",
+            "description": "Field projection"
+          },
+          "limit": {
+            "description": "Maximum records to return",
+            "type": "number"
+          },
+          "offset": {
+            "description": "Number of records to skip",
+            "type": "number"
+          },
+          "query": {
+            "$ref": "#/components/schemas/MongoQuery",
+            "description": "MongoDB-style query filter"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortCriteria",
+            "description": "Sort criteria"
+          },
+          "status": {
+            "description": "Include last status information",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "Alert": {
+        "additionalProperties": false,
+        "description": "Alert generated from thing monitoring",
+        "properties": {
+          "createdAt": {
+            "description": "Unix timestamp when alert was created",
+            "type": "number"
+          },
+          "message": {
+            "description": "Alert message",
+            "type": "string"
+          },
+          "type": {
+            "description": "Alert type identifier",
+            "type": "string"
+          },
+          "uuid": {
+            "description": "Alert unique identifier",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uuid",
+          "createdAt",
+          "type"
+        ],
+        "type": "object"
+      },
+      "Thing": {
+        "additionalProperties": false,
+        "description": "A manageable entity in MiningOS (device, sensor, miner, etc.)",
+        "properties": {
+          "code": {
+            "description": "Human-readable code (e.g., \"MINER-0001\")",
+            "type": "string"
+          },
+          "comments": {
+            "description": "User comments attached to the thing",
+            "items": {
+              "$ref": "#/components/schemas/ThingComment"
+            },
+            "type": "array"
+          },
+          "id": {
+            "description": "Unique identifier (UUID)",
+            "type": "string"
+          },
+          "info": {
+            "$ref": "#/components/schemas/ThingInfo",
+            "description": "Metadata about the thing"
+          },
+          "last": {
+            "$ref": "#/components/schemas/ThingStatus",
+            "description": "Last known status from snapshot collection"
+          },
+          "opts": {
+            "$ref": "#/components/schemas/ThingOpts",
+            "description": "Connection and configuration options"
+          },
+          "rack": {
+            "description": "Rack identifier this thing belongs to",
+            "type": "string"
+          },
+          "tags": {
+            "description": "Array of tags for filtering and categorization",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "type": {
+            "description": "Thing type identifier",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "type",
+          "tags",
+          "info",
+          "opts",
+          "rack"
+        ],
+        "type": "object"
+      },
+      "ThingComment": {
+        "additionalProperties": false,
+        "description": "User comment attached to a thing",
+        "properties": {
+          "comment": {
+            "description": "Comment text content",
+            "type": "string"
+          },
+          "id": {
+            "description": "Comment unique identifier",
+            "type": "string"
+          },
+          "pos": {
+            "description": "Optional position reference",
+            "type": "string"
+          },
+          "ts": {
+            "description": "Unix timestamp when comment was created",
+            "type": "number"
+          },
+          "user": {
+            "description": "Username of comment author",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "ts",
+          "comment",
+          "user"
+        ],
+        "type": "object"
+      },
+      "ThingInfo": {
+        "additionalProperties": false,
+        "description": "Thing metadata and state information",
+        "properties": {
+          "container": {
+            "description": "Container identifier (or 'maintenance' for offline)",
+            "type": "string"
+          },
+          "createdAt": {
+            "description": "Unix timestamp of creation",
+            "type": "number"
+          },
+          "lastActionId": {
+            "description": "ID of the last action performed",
+            "type": "string"
+          },
+          "pos": {
+            "description": "Position identifier within a container/rack",
+            "type": "string"
+          },
+          "updatedAt": {
+            "description": "Unix timestamp of last update",
+            "type": "number"
+          }
+        },
+        "required": [
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object"
+      },
+      "ThingOpts": {
+        "additionalProperties": false,
+        "description": "Connection and configuration options for a thing",
+        "properties": {
+          "host": {
+            "description": "Host address for connection",
+            "type": "string"
+          },
+          "port": {
+            "description": "Port number for connection",
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "ThingStatus": {
+        "additionalProperties": false,
+        "description": "Last known status from snapshot collection",
+        "properties": {
+          "alerts": {
+            "description": "Active alerts for this thing",
+            "items": {
+              "$ref": "#/components/schemas/Alert"
+            },
+            "type": "array"
+          },
+          "err": {
+            "description": "Error message if last collection failed",
+            "type": "string"
+          },
+          "snap": {
+            "description": "Snapshot data from device"
+          },
+          "ts": {
+            "description": "Timestamp of last status update",
+            "type": "number"
+          }
+        },
+        "required": [
+          "ts"
+        ],
+        "type": "object"
+      },
+      "ListThingsResult": {
+        "description": "Result for `listThings` RPC method.",
+        "items": {
+          "$ref": "#/components/schemas/Thing"
+        },
+        "type": "array"
+      },
+      "GetThingsCountParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `getThingsCount` RPC method",
+        "properties": {
+          "query": {
+            "$ref": "#/components/schemas/MongoQuery",
+            "description": "MongoDB-style query filter"
+          }
+        },
+        "type": "object"
+      },
+      "GetThingsCountResult": {
+        "description": "Result for `getThingsCount` RPC method. Count of things matching the query.",
+        "type": "number"
+      },
+      "RegisterThingParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `registerThing` RPC method",
+        "properties": {
+          "code": {
+            "description": "Device code (auto-generated if not provided, must match pattern *-NNNN)",
+            "type": "string"
+          },
+          "comment": {
+            "description": "Registration comment",
+            "type": "string"
+          },
+          "id": {
+            "description": "Device ID (auto-generated UUID if not provided)",
+            "type": "string"
+          },
+          "info": {
+            "$ref": "#/components/schemas/ThingInfo",
+            "description": "Device metadata"
+          },
+          "opts": {
+            "$ref": "#/components/schemas/ThingOpts",
+            "description": "Device connection options (required)"
+          },
+          "tags": {
+            "description": "Additional tags",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "user": {
+            "description": "User making the request (required if comment provided)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "opts"
+        ],
+        "type": "object"
+      },
+      "RegisterThingResult": {
+        "description": "Result for `registerThing` RPC method. Returns 1 on success.",
+        "type": "number"
+      },
+      "UpdateThingParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `updateThing` RPC method",
+        "properties": {
+          "actionId": {
+            "description": "Action identifier for tracking",
+            "type": "string"
+          },
+          "comment": {
+            "description": "Update comment",
+            "type": "string"
+          },
+          "forceOverwrite": {
+            "description": "If true, replace instead of merge",
+            "type": "boolean"
+          },
+          "id": {
+            "description": "Device ID (required)",
+            "type": "string"
+          },
+          "info": {
+            "$ref": "#/components/schemas/ThingInfo",
+            "description": "Updated metadata"
+          },
+          "opts": {
+            "$ref": "#/components/schemas/ThingOpts",
+            "description": "Updated connection options"
+          },
+          "tags": {
+            "description": "Updated tags",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "user": {
+            "description": "User making the request",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "UpdateThingResult": {
+        "description": "Result for `updateThing` RPC method. Returns 1 on success.",
+        "type": "number"
+      },
+      "SaveThingCommentParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `saveThingComment` RPC method",
+        "properties": {
+          "comment": {
+            "description": "Comment text",
+            "type": "string"
+          },
+          "pos": {
+            "description": "Optional position reference",
+            "type": "string"
+          },
+          "thingId": {
+            "description": "Thing ID to add comment to",
+            "type": "string"
+          },
+          "user": {
+            "description": "Username of comment author",
+            "type": "string"
+          }
+        },
+        "required": [
+          "thingId",
+          "comment",
+          "user"
+        ],
+        "type": "object"
+      },
+      "SaveThingCommentResult": {
+        "description": "Result for `saveThingComment` RPC method. Returns 1 on success.",
+        "type": "number"
+      },
+      "EditThingCommentParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `editThingComment` RPC method",
+        "properties": {
+          "comment": {
+            "description": "New comment text",
+            "type": "string"
+          },
+          "id": {
+            "description": "Comment ID (preferred)",
+            "type": "string"
+          },
+          "thingId": {
+            "description": "Thing ID",
+            "type": "string"
+          },
+          "ts": {
+            "description": "Comment timestamp (fallback if id not provided)",
+            "type": "number"
+          },
+          "user": {
+            "description": "Username (must match original author)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "thingId",
+          "comment",
+          "user"
+        ],
+        "type": "object"
+      },
+      "EditThingCommentResult": {
+        "description": "Result for `editThingComment` RPC method. Returns 1 on success.",
+        "type": "number"
+      },
+      "DeleteThingCommentParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `deleteThingComment` RPC method",
+        "properties": {
+          "id": {
+            "description": "Comment ID (preferred)",
+            "type": "string"
+          },
+          "thingId": {
+            "description": "Thing ID",
+            "type": "string"
+          },
+          "ts": {
+            "description": "Comment timestamp (fallback if id not provided)",
+            "type": "number"
+          },
+          "user": {
+            "description": "Username (must match original author)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "thingId",
+          "user"
+        ],
+        "type": "object"
+      },
+      "DeleteThingCommentResult": {
+        "description": "Result for `deleteThingComment` RPC method. Returns 1 on success.",
+        "type": "number"
+      },
+      "ForgetThingsParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `forgetThings` RPC method",
+        "properties": {
+          "all": {
+            "description": "If true, remove all things",
+            "type": "boolean"
+          },
+          "query": {
+            "$ref": "#/components/schemas/MongoQuery",
+            "description": "Query to select things to remove"
+          }
+        },
+        "type": "object"
+      },
+      "ForgetThingsResult": {
+        "description": "Result for `forgetThings` RPC method. Returns 1 on success.",
+        "type": "number"
+      },
+      "ApplyThingsParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `applyThings` RPC method",
+        "properties": {
+          "fields": {
+            "$ref": "#/components/schemas/FieldProjection",
+            "description": "Field projection for selection"
+          },
+          "limit": {
+            "description": "Maximum things to process",
+            "type": "number"
+          },
+          "method": {
+            "description": "Method to execute on each thing",
+            "type": "string"
+          },
+          "offset": {
+            "description": "Number of things to skip",
+            "type": "number"
+          },
+          "params": {
+            "description": "Parameters to pass to the method",
+            "items": {},
+            "type": "array"
+          },
+          "query": {
+            "$ref": "#/components/schemas/MongoQuery",
+            "description": "Query to select things (default: all)"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortCriteria",
+            "description": "Sort criteria for selection"
+          }
+        },
+        "required": [
+          "method"
+        ],
+        "type": "object"
+      },
+      "ApplyThingsResult": {
+        "description": "Result for `applyThings` RPC method. Number of successful operations.",
+        "type": "number"
+      },
+      "TailLogParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `tailLog` RPC method",
+        "properties": {
+          "end": {
+            "description": "End timestamp for time range",
+            "type": "number"
+          },
+          "fields": {
+            "$ref": "#/components/schemas/FieldProjection",
+            "description": "Field projection"
+          },
+          "groupRange": {
+            "description": "Group logs by time range",
+            "type": "string"
+          },
+          "key": {
+            "description": "Log type identifier (e.g., 'thing-5m', 'stat-H')",
+            "type": "string"
+          },
+          "limit": {
+            "description": "Maximum entries (default 100 if no time range)",
+            "type": "number"
+          },
+          "offset": {
+            "description": "Log file offset",
+            "type": "number"
+          },
+          "shouldCalculateAvg": {
+            "description": "Calculate averages when grouping",
+            "type": "boolean"
+          },
+          "start": {
+            "description": "Start timestamp for time range",
+            "type": "number"
+          },
+          "tag": {
+            "description": "Thing tag or identifier",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "tag"
+        ],
+        "type": "object"
+      },
+      "LogEntry": {
+        "additionalProperties": false,
+        "description": "Log entry from tailLog",
+        "properties": {
+          "err": {
+            "description": "Error message if collection failed",
+            "type": "string"
+          },
+          "snap": {
+            "description": "Snapshot data"
+          },
+          "ts": {
+            "description": "Timestamp",
+            "type": "number"
+          }
+        },
+        "required": [
+          "ts"
+        ],
+        "type": "object"
+      },
+      "TailLogResult": {
+        "description": "Result for `tailLog` RPC method.",
+        "items": {
+          "$ref": "#/components/schemas/LogEntry"
+        },
+        "type": "array"
+      },
+      "GetHistoricalLogsParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `getHistoricalLogs` RPC method",
+        "properties": {
+          "end": {
+            "description": "End timestamp",
+            "type": "number"
+          },
+          "fields": {
+            "$ref": "#/components/schemas/FieldProjection",
+            "description": "Field projection (for 'info' type)"
+          },
+          "limit": {
+            "description": "Maximum entries",
+            "type": "number"
+          },
+          "logType": {
+            "description": "Type of historical logs to retrieve",
+            "enum": [
+              "alerts",
+              "info"
+            ],
+            "type": "string"
+          },
+          "offset": {
+            "description": "Starting offset",
+            "type": "number"
+          },
+          "start": {
+            "description": "Start timestamp",
+            "type": "number"
+          }
+        },
+        "required": [
+          "logType"
+        ],
+        "type": "object"
+      },
+      "HistoricalAlert": {
+        "additionalProperties": false,
+        "description": "Historical alert entry",
+        "properties": {
+          "createdAt": {
+            "description": "Unix timestamp",
+            "type": "number"
+          },
+          "thing": {
+            "$ref": "#/components/schemas/Thing",
+            "description": "Associated thing (partial)"
+          },
+          "type": {
+            "description": "Alert type",
+            "type": "string"
+          },
+          "uuid": {
+            "description": "Alert unique identifier",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uuid",
+          "createdAt",
+          "type",
+          "thing"
+        ],
+        "type": "object"
+      },
+      "HistoricalInfoChange": {
+        "additionalProperties": false,
+        "description": "Historical info change entry",
+        "properties": {
+          "changes": {
+            "description": "Object describing what changed"
+          },
+          "thing": {
+            "$ref": "#/components/schemas/Thing",
+            "description": "Associated thing (partial)"
+          },
+          "ts": {
+            "description": "Timestamp of change",
+            "type": "number"
+          }
+        },
+        "required": [
+          "ts",
+          "changes",
+          "thing"
+        ],
+        "type": "object"
+      },
+      "GetHistoricalLogsResult": {
+        "anyOf": [
+          {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalAlert"
+            },
+            "type": "array"
+          },
+          {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalInfoChange"
+            },
+            "type": "array"
+          }
+        ],
+        "description": "Result for `getHistoricalLogs` RPC method. Discriminated by `req.logType`: `'alerts'` yields HistoricalAlert entries, `'info'` yields HistoricalInfoChange entries. Emitted as `oneOf` in the OpenRPC output."
+      },
+      "GetReplicaConfParams": {
+        "description": "Parameters for `getReplicaConf` RPC method"
+      },
+      "ReplicaConf": {
+        "additionalProperties": false,
+        "description": "Replica configuration",
+        "properties": {
+          "keys": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Mapping of log names to replica keys",
+            "type": "object"
+          }
+        },
+        "required": [
+          "keys"
+        ],
+        "type": "object"
+      },
+      "GetReplicaConfResult": {
+        "$ref": "#/components/schemas/ReplicaConf",
+        "description": "Result for `getReplicaConf` RPC method."
+      },
+      "RackRebootParams": {
+        "description": "Parameters for `rackReboot` RPC method"
+      },
+      "RackRebootResult": {
+        "description": "Result for `rackReboot` RPC method. Returns 1 immediately (process exits asynchronously).",
+        "type": "number"
+      },
+      "GetWrkExtDataParams": {
+        "description": "Parameters for `getWrkExtData` RPC method"
+      },
+      "GetWrkExtDataResult": {
+        "description": "Result for `getWrkExtData` RPC method. Extended worker data, extensible by subclasses via `_getWrkExtData`. Shape is deployment-specific."
+      },
+      "GetWrkConfParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `getWrkConf` RPC method",
+        "properties": {
+          "fields": {
+            "$ref": "#/components/schemas/FieldProjection",
+            "description": "Field projection for config"
+          }
+        },
+        "type": "object"
+      },
+      "GetWrkConfResult": {
+        "description": "Result for `getWrkConf` RPC method. Global configuration object (or a projected subset when `req.fields` is supplied). Shape is deployment-specific."
+      },
+      "GetThingConfParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `getThingConf` RPC method",
+        "properties": {
+          "requestType": {
+            "const": "nextAvailableCode",
+            "description": "Type of configuration to retrieve",
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestType"
+        ],
+        "type": "object"
+      },
+      "GetThingConfResult": {
+        "description": "Result for `getThingConf` RPC method. For `requestType: 'nextAvailableCode'` the result is the next available thing code string.",
+        "type": "string"
+      },
+      "GetWrkSettingsParams": {
+        "description": "Parameters for `getWrkSettings` RPC method"
+      },
+      "WrkSettings": {
+        "description": "Worker settings"
+      },
+      "GetWrkSettingsResult": {
+        "$ref": "#/components/schemas/WrkSettings",
+        "description": "Result for `getWrkSettings` RPC method."
+      },
+      "SaveWrkSettingsParams": {
+        "additionalProperties": false,
+        "description": "Parameters for `saveWrkSettings` RPC method",
+        "properties": {
+          "entries": {
+            "description": "Settings entries to save"
+          }
+        },
+        "required": [
+          "entries"
+        ],
+        "type": "object"
+      },
+      "SaveWrkSettingsResult": {
+        "description": "Result for `saveWrkSettings` RPC method. Polymorphic: passes through the underlying settings-save facility, whose return shape varies. Intentionally untyped."
+      }
+    }
+  }
+}

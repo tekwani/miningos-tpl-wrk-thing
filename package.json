@@ -34,7 +34,9 @@
     "test:integration:wrk": "cd tests/integration && NODE_ENV=test brittle miner-wrk.js",
     "test:integration:stats": "cd tests/integration && NODE_ENV=test brittle miner-stats.js",
     "test:device": "NODE_ENV=test brittle tests/device.test.js",
-    "test:coverage": "brittle --coverage tests/{,**/}*.test.js"
+    "test:coverage": "brittle --coverage tests/{,**/}*.test.js",
+    "openrpc:generate": "node scripts/generate-openrpc.js",
+    "openrpc:validate": "node scripts/validate-openrpc.js"
   },
   "dependencies": {
     "@bitfinex/lib-js-util-promise": "git+https://github.com/bitfinexcom/lib-js-util-promise.git",
@@ -51,10 +53,13 @@
     "uuid": "9.0.1"
   },
   "devDependencies": {
+    "@open-rpc/schema-utils-js": "2.2.1",
     "brittle": "3.16.3",
     "proxyquire": "2.1.3",
     "standard": "17.1.2",
     "tether-svc-test-helper": "git+https://github.com/tetherto/tether-svc-test-helper.git",
+    "ts-json-schema-generator": "2.9.0",
+    "typescript": "5.9.3",
     "yargs": "17.7.2"
   }
 }

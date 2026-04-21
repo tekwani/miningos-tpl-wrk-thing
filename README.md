@@ -12,9 +12,6 @@
     2. [Tag System](#tag-system)
     3. [Snapshot](#snapshot)
 4. [API Reference](#api-reference)
-    1. [Thing Management](#thing-management)
-    2. [Thing Operation](#thing-operation)
-    3. [Data Access](#data-access)
        
 ## Overview
 
@@ -226,155 +223,14 @@ Periodic data collection from devices:
 
 ## API Reference
 
-### Thing Management
+[**Browse the API apec in the OpenRPC Playground**](https://playground.open-rpc.org/?url=https://raw.githubusercontent.com/tetherto/miningos-tpl-wrk-thing/main/docs/openrpc.json) — interactive view of methods, parameters, results, and schemas pulled live from `main`.
 
-#### Register Thing
-```javascript
-registerThing(req)
+> This link only works on main branch, swap main for your branch name to preview
+
+The API is documented via [`docs/openrpc.json`](docs/openrpc.json), generated from JSDoc annotations. Add `@typedef` in [`workers/lib/types.js`](workers/lib/types.js) for types and annotate methods in [`workers/rack.thing.wrk.js`](workers/rack.thing.wrk.js) with `@param`, `@returns`, and `@throws`. Then run:
+
+```bash
+npm run openrpc:generate && npm run openrpc:validate
 ```
-Creates a new device in the system.
 
-**Parameters:**
-- `req.id`: Device ID (auto-generated if not provided)
-- `req.code`: Device code (auto-generated if not provided)
-- `req.opts`: Device options (**necessary** for connecting to device)
-- `req.info`: Device metadata (defaults to `{}` if not provided)
-- `req.tags`: Additional tags (auto-generated if not provided)
-- `req.comment`: Registration comment (optional)
-- `req.user`: User making the request (only used with comment)
-
-**Returns:** `1` on success
-
-**Errors:**
-- `ERR_SLAVE_BLOCK`: Operation blocked on slave nodes
-- `ERR_THING_WITH_ID_ALREADY_EXISTS`: Duplicate ID
-- `ERR_THING_WITH_CODE_ALREADY_EXISTS`: Duplicate code
-- `ERR_THING_CODE_INVALID`: Malformed string for code
-
-#### Update Thing
-```javascript
-updateThing(req)
-```
-Updates an existing device.
-
-**Parameters:**
-- `req.id` (the only required): Device ID
-- `req.opts`: Updated options
-- `req.info`: Updated metadata
-- `req.tags`: Updated tags
-- `req.forceOverwrite`: (boolean) Replace instead of merge (with *spread operator*)
-- `req.comment`: Update comment
-- `req.user`: User making the request
-- `req.actionId`: Action identifier for tracking
-
-**Returns:** `1` on success
-
-**Errors:**
-- `ERR_THING_NOTFOUND`: Device not found
-- `ERR_SLAVE_BLOCK`: Operation blocked on slave nodes
-
-#### List Things
-```javascript
-listThings(req)
-```
-Query devices with filters and pagination.
-
-**Parameters:** (all optional)
-- `req.query`: MongoDB-style query
-- `req.fields`: Field projection
-- `req.sort`: Sort criteria. None = maintains natural order
-- `req.offset`: Skip records (default: 0)
-- `req.limit`: Max records (default: 100)
-- `req.status`: Include status information
-
-**Returns:** Array of device objects
-
-**Errors:**
-- Implicitly through invalid MongoDB querries.
-
-#### Forget Things
-```javascript
-forgetThings(req)
-```
-Remove devices from the system.
-
-**Parameters:**
-- `req.query`: Query to select devices
-- `req.all`: (boolean) True means *'Remove all devices'*
-
-**Returns:** Number of devices removed
-
-**Errors:**
-- `ERR_SLAVE_BLOCK`: Operation blocked on slave nodes
-- Implicitly through invalid MongoDB querries.
-
-### Data Access
-
-#### Tail Log
-```javascript
-tailLog(req)
-```
-Retrieve time-series log data.
-
-**Parameters:**
-- `req.key`: Log type identifier
-- `req.tag`: Device tag
-- `req.offset`: Log file offset
-- `req.limit`: Max entries
-- `req.start`: Start timestamp
-- `req.end`: End timestamp
-- `req.fields`: Field projection
-
-**Returns:** Array of log entries
-
-#### Get Historical Logs
-```javascript
-getHistoricalLogs(req)
-```
-Retrieve historical alerts or info changes.
-
-**Parameters:**
-- `req.logType`: 'alerts' or 'info'
-- `req.offset`: Starting offset
-- `req.limit`: Max entries
-- `req.start`: Start timestamp
-- `req.end`: End timestamp
-
-**Returns:** Array of historical entries
-
-### Thing Operations
-
-#### Query Thing
-```javascript
-queryThing(req)
-```
-Execute a method on a specific device.
-
-**Parameters:**
-- `req.id`: Device ID
-- `req.method`: Method name
-- `req.params`: Method parameters
-
-**Returns:** Method execution result
-
-**Errors:**
-- `ERR_THING_NOTFOUND`: Device not found
-- `ERR_THING_NOT_INITIALIZED`: Device controller not ready
-- `ERR_THING_METHOD_NOTFOUND`: Method doesn't exist
-
-#### Apply Things
-```javascript
-applyThings(req)
-```
-Execute bulk operations on multiple devices.
-
-**Parameters:**
-- `req.method` (required): Method to execute
-- `req.query`: MongoDB-style query to select devices (default: all devices)
-- `req.params`: Array of parameters to pass to the method (default: empty)
-- `req.fields`: Field projection for device selection
-- `req.sort`: Sort criteria for device selection
-- `req.offset`: Number of devices to skip
-- `req.limit`: Maximum number of devices to process
-
-**Returns:** Number of successful operations
+[Learn more about the API specification tooling](docs/readme.md).

@@ -589,6 +589,24 @@ class WrkProcVar extends TetherWrkBase {
     return thg
   }
 
+  /**
+   * Creates a new thing (device) in the system.
+   * @method registerThing
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {string} [req.id] - Device ID (auto-generated UUID if not provided)
+   * @param {string} [req.code] - Device code (auto-generated if not provided, format: TYPE-NNNN)
+   * @param {Object} req.opts - Device connection options (required)
+   * @param {Object} [req.info] - Device metadata
+   * @param {string[]} [req.tags] - Additional tags for categorization
+   * @param {string} [req.comment] - Registration comment
+   * @param {string} [req.user] - User making the request (required if comment provided)
+   * @returns {Promise<number>} Returns 1 on success
+   * @throws {Error} ERR_SLAVE_BLOCK - Operation blocked on slave/replica nodes
+   * @throws {Error} ERR_THING_WITH_ID_ALREADY_EXISTS - Thing with this ID already exists
+   * @throws {Error} ERR_THING_WITH_CODE_ALREADY_EXISTS - Thing with this code already exists
+   * @throws {Error} ERR_THING_CODE_INVALID - Code format invalid (must end with -NNNN)
+   */
   async registerThing (req) {
     if (this.ctx.slave) {
       throw new Error('ERR_SLAVE_BLOCK')
@@ -633,6 +651,23 @@ class WrkProcVar extends TetherWrkBase {
     }
   }
 
+  /**
+   * Updates an existing thing's properties.
+   * @method updateThing
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {string} req.id - Device ID (required)
+   * @param {Object} [req.opts] - Updated connection options (merged with existing unless forceOverwrite)
+   * @param {Object} [req.info] - Updated metadata (merged with existing unless forceOverwrite)
+   * @param {string[]} [req.tags] - Updated tags
+   * @param {boolean} [req.forceOverwrite=false] - If true, replace opts/info instead of merging
+   * @param {string} [req.comment] - Update comment
+   * @param {string} [req.user] - User making the request (required if comment provided)
+   * @param {string} [req.actionId] - Action identifier for tracking
+   * @returns {Promise<number>} Returns 1 on success
+   * @throws {Error} ERR_SLAVE_BLOCK - Operation blocked on slave/replica nodes
+   * @throws {Error} ERR_THING_NOTFOUND - Thing with specified ID not found
+   */
   async updateThing (req) {
     if (this.ctx.slave) {
       throw new Error('ERR_SLAVE_BLOCK')
@@ -728,6 +763,19 @@ class WrkProcVar extends TetherWrkBase {
     }
   }
 
+  /**
+   * Adds a new comment to a thing.
+   * @method saveThingComment
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {string} req.thingId - Thing ID to add comment to
+   * @param {string} req.comment - Comment text content
+   * @param {string} req.user - Username of comment author
+   * @param {string} [req.pos] - Optional position reference
+   * @returns {Promise<number>} Returns 1 on success
+   * @throws {Error} ERR_SLAVE_BLOCK - Operation blocked on slave/replica nodes
+   * @throws {Error} ERR_THING_NOTFOUND - Thing with specified ID not found
+   */
   async saveThingComment (req) {
     this._checkWriteAccessToThing(req)
 
@@ -748,6 +796,23 @@ class WrkProcVar extends TetherWrkBase {
     return 1
   }
 
+  /**
+   * Edits an existing comment on a thing. Only the original author can edit.
+   * @method editThingComment
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {string} req.thingId - Thing ID
+   * @param {string} [req.id] - Comment ID (preferred identifier)
+   * @param {number} [req.ts] - Comment timestamp (fallback if id not provided)
+   * @param {string} req.comment - New comment text
+   * @param {string} req.user - Username (must match original author)
+   * @returns {Promise<number>} Returns 1 on success
+   * @throws {Error} ERR_SLAVE_BLOCK - Operation blocked on slave/replica nodes
+   * @throws {Error} ERR_THING_NOTFOUND - Thing with specified ID not found
+   * @throws {Error} ERR_THING_COMMENTS_NOTFOUND - Thing has no comments
+   * @throws {Error} ERR_THING_COMMENT_NOTFOUND - Specified comment not found
+   * @throws {Error} ERR_COMMENT_ACCESS_DENIED - User is not the comment author
+   */
   async editThingComment (req) {
     this._checkWriteAccessToThing(req)
 
@@ -768,6 +833,22 @@ class WrkProcVar extends TetherWrkBase {
     return 1
   }
 
+  /**
+   * Deletes a comment from a thing. Only the original author can delete.
+   * @method deleteThingComment
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {string} req.thingId - Thing ID
+   * @param {string} [req.id] - Comment ID (preferred identifier)
+   * @param {number} [req.ts] - Comment timestamp (fallback if id not provided)
+   * @param {string} req.user - Username (must match original author)
+   * @returns {Promise<number>} Returns 1 on success
+   * @throws {Error} ERR_SLAVE_BLOCK - Operation blocked on slave/replica nodes
+   * @throws {Error} ERR_THING_NOTFOUND - Thing with specified ID not found
+   * @throws {Error} ERR_THING_COMMENTS_NOTFOUND - Thing has no comments
+   * @throws {Error} ERR_THING_COMMENT_NOTFOUND - Specified comment not found
+   * @throws {Error} ERR_COMMENT_ACCESS_DENIED - User is not the comment author
+   */
   async deleteThingComment (req) {
     this._checkWriteAccessToThing(req)
 
@@ -805,6 +886,16 @@ class WrkProcVar extends TetherWrkBase {
     return 1
   }
 
+  /**
+   * Removes things from the system based on a query filter.
+   * @method forgetThings
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {Object} [req.query] - MongoDB-style query to select things to remove
+   * @param {boolean} [req.all=false] - If true, remove all things (ignores query)
+   * @returns {Promise<number>} Returns 1 on success
+   * @throws {Error} ERR_SLAVE_BLOCK - Operation blocked on slave/replica nodes
+   */
   async forgetThings (req) {
     if (this.ctx.slave) {
       throw new Error('ERR_SLAVE_BLOCK')
@@ -974,6 +1065,20 @@ class WrkProcVar extends TetherWrkBase {
     return gLibUtilBase.isEmpty(req.fields) ? historyWithCurrentThingInfo : this._projection(historyWithCurrentThingInfo, req.fields)
   }
 
+  /**
+   * Retrieves historical logs (alerts or info changes).
+   * @method getHistoricalLogs
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {'alerts'|'info'} req.logType - Type of historical logs to retrieve
+   * @param {number} [req.offset=0] - Starting offset
+   * @param {number} [req.limit=100] - Maximum entries to return
+   * @param {number} [req.start] - Start timestamp for time range filter
+   * @param {number} [req.end] - End timestamp for time range filter
+   * @param {Object} [req.fields] - Field projection (for 'info' type only)
+   * @returns {Promise<Array>} Array of historical log entries with associated thing info
+   * @throws {Error} ERR_INFO_HISTORY_LOG_TYPE_INVALID - logType parameter missing or invalid
+   */
   async getHistoricalLogs (req) {
     const logType = req.logType
     if (!logType) {
@@ -1003,6 +1108,22 @@ class WrkProcVar extends TetherWrkBase {
     }
   }
 
+  /**
+   * Executes a method on multiple things matching a query filter.
+   * @method applyThings
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {string} req.method - Method name to execute on each thing's controller
+   * @param {Object} [req.query] - MongoDB-style query to select things (default: all)
+   * @param {any[]} [req.params=[]] - Parameters to pass to the method
+   * @param {Object} [req.fields] - Field projection for thing selection
+   * @param {Object} [req.sort] - Sort criteria for thing selection
+   * @param {number} [req.offset] - Number of things to skip
+   * @param {number} [req.limit] - Maximum number of things to process
+   * @returns {Promise<number>} Number of successful operations
+   * @throws {Error} ERR_SLAVE_BLOCK - Operation blocked on slave/replica nodes
+   * @throws {Error} ERR_METHOD_INVALID - Method parameter missing or invalid
+   */
   async applyThings (req) {
     if (this.ctx.slave) {
       throw new Error('ERR_SLAVE_BLOCK')
@@ -1047,6 +1168,19 @@ class WrkProcVar extends TetherWrkBase {
     // no op
   }
 
+  /**
+   * Executes a method on a specific thing's controller.
+   * @method queryThing
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {string} req.id - Thing ID
+   * @param {string} req.method - Method name to execute on the thing's controller
+   * @param {any[]} req.params - Parameters to pass to the method
+   * @returns {Promise<any>} Result from the method execution
+   * @throws {Error} ERR_THING_NOTFOUND - Thing with specified ID not found
+   * @throws {Error} ERR_THING_NOT_INITIALIZED - Thing controller not ready/connected
+   * @throws {Error} ERR_THING_METHOD_NOTFOUND - Method does not exist on thing controller
+   */
   async queryThing (req) {
     const thg = this.mem.things[req.id]
 
@@ -1131,6 +1265,19 @@ class WrkProcVar extends TetherWrkBase {
     return cursor.all()
   }
 
+  /**
+   * Lists things with optional filtering, pagination, and sorting.
+   * @method listThings
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {Object} [req.query] - MongoDB-style query filter
+   * @param {Object} [req.fields] - Field projection for results
+   * @param {Object} [req.sort] - Sort criteria (e.g., { 'info.createdAt': -1 })
+   * @param {number} [req.offset=0] - Number of records to skip
+   * @param {number} [req.limit=100] - Maximum records to return
+   * @param {boolean} [req.status=false] - Include last status/snapshot information
+   * @returns {Array<Object>} Array of thing objects matching the query
+   */
   listThings (req) {
     const thgs = this._filterThings({
       ...req,
@@ -1145,6 +1292,14 @@ class WrkProcVar extends TetherWrkBase {
     return res
   }
 
+  /**
+   * Returns the count of things matching an optional query filter.
+   * @method getThingsCount
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {Object} [req.query] - MongoDB-style query filter
+   * @returns {number} Count of things matching the query
+   */
   getThingsCount (req) {
     let things = Object.values(this.mem.things)
 
@@ -1156,6 +1311,15 @@ class WrkProcVar extends TetherWrkBase {
     return things.length
   }
 
+  /**
+   * Returns rack information including ID and RPC public key.
+   * @method getRack
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters (currently unused)
+   * @returns {Object} Rack information
+   * @returns {string} returns.id - Rack identifier
+   * @returns {string} returns.rpcPubKey - RPC server public key (hex encoded)
+   */
   getRack (req) {
     return {
       id: this.rackId,
@@ -1221,6 +1385,25 @@ class WrkProcVar extends TetherWrkBase {
     return allLogs
   }
 
+  /**
+   * Retrieves time-series log data for a specific thing or statistic.
+   * @method tailLog
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {string} req.key - Log type identifier (e.g., 'thing-5m', 'stat-H', 'stat-D')
+   * @param {string} req.tag - Thing tag or identifier
+   * @param {number} [req.offset=0] - Log file offset for pagination
+   * @param {number} [req.limit] - Maximum entries (default 100 if no time range specified)
+   * @param {number} [req.start] - Start timestamp for time range filter
+   * @param {number} [req.end] - End timestamp for time range filter
+   * @param {Object} [req.fields] - Field projection for results
+   * @param {string} [req.groupRange] - Group logs by time range for aggregation
+   * @param {boolean} [req.shouldCalculateAvg] - Calculate averages when grouping
+   * @returns {Promise<Array>} Array of log entries
+   * @throws {Error} ERR_LOG_KEY_NOTFOUND - key parameter missing
+   * @throws {Error} ERR_LOG_TAG_INVALID - tag parameter missing or invalid
+   * @throws {Error} ERR_LOG_NOTFOUND - Requested log not found
+   */
   async tailLog (req) {
     if (!req.key) {
       throw new Error('ERR_LOG_KEY_NOTFOUND')
@@ -1295,24 +1478,61 @@ class WrkProcVar extends TetherWrkBase {
     return res
   }
 
+  /**
+   * Returns the replica configuration for this worker.
+   * @method getReplicaConf
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters (currently unused)
+   * @returns {Promise<Object>} Replica configuration with key mappings
+   */
   async getReplicaConf (req) {
     return lWrkFunReplica.getReplicaConf.call(this, req, lWrkFunLogs)
   }
 
+  /**
+   * Returns extended worker data. Override _getWrkExtData in subclasses to provide custom data.
+   * @method getWrkExtData
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters (passed to _getWrkExtData)
+   * @returns {Promise<Object>} Extended worker data (empty object by default)
+   */
   async getWrkExtData (req) {
     return this._getWrkExtData(req)
   }
 
+  /**
+   * Returns the current worker settings.
+   * @method getWrkSettings
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters (currently unused)
+   * @returns {Promise<Object>} Current worker settings
+   */
   async getWrkSettings (req) {
     return await lWrkFunSettings.getSettings.call(this)
   }
 
+  /**
+   * Saves worker settings entries.
+   * @method saveWrkSettings
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {Object} req.entries - Settings entries to save (key-value pairs)
+   * @returns {Promise<any>} Result from settings save operation
+   * @throws {Error} ERR_ENTRIES_INVALID - entries parameter missing or invalid
+   */
   async saveWrkSettings (req) {
     if (!req.entries) throw new Error('ERR_ENTRIES_INVALID')
 
     return await lWrkFunSettings.saveSettingsEntries.call(this, req.entries)
   }
 
+  /**
+   * Initiates a rack reboot by stopping the worker process.
+   * @method rackReboot
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters (currently unused)
+   * @returns {number} Returns 1 immediately (process exits asynchronously)
+   */
   rackReboot (req) {
     this.stop(() => {
       return exit(-1)
@@ -1363,6 +1583,15 @@ class WrkProcVar extends TetherWrkBase {
     })
   }
 
+  /**
+   * Returns the global worker configuration with optional field projection.
+   * @method getWrkConf
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {Object} [req.fields] - Field projection to limit returned fields
+   * @returns {Promise<Object>} Global configuration object (or projected subset)
+   * @throws {Error} ERR_GLOBAL_CONFIG_MISSING - Global config not loaded
+   */
   async getWrkConf (req) {
     const fields = req.fields || {}
     if (!this.conf?.globalConfig) {
@@ -1371,6 +1600,15 @@ class WrkProcVar extends TetherWrkBase {
     return this._projection([this.conf.globalConfig], fields)?.[0]
   }
 
+  /**
+   * Returns thing-related configuration values.
+   * @method getThingConf
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {'nextAvailableCode'} req.requestType - Type of configuration to retrieve
+   * @returns {Promise<string>} For 'nextAvailableCode': the next available thing code
+   * @throws {Error} ERR_INVALID_REQUEST_TYPE - requestType is not 'nextAvailableCode'
+   */
   async getThingConf (req) {
     if (req.requestType !== 'nextAvailableCode') {
       throw new Error('ERR_INVALID_REQUEST_TYPE')
