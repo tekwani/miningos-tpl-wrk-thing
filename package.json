@@ -1,6 +1,6 @@
 {
   "name": "@tetherto/miningos-tpl-wrk-thing",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "MiningOS Template Worker Thing",
   "main": "worker.js",
   "keywords": [
