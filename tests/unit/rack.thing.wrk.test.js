@@ -2091,6 +2091,52 @@ test('WrkProcVar: rackReboot stops worker', async t => {
   t.ok(stopped)
 })
 
+test('WrkProcVar: stop clears timers and ends rpc channels before base stop', async t => {
+  const timers = () => ({ mem: new Map([['a', 1], ['b', 2]]), del (k) { this.mem.delete(k) } })
+  const ended = []
+  const w = protoWorker({
+    interval_0: timers(),
+    scheduler_0: timers(),
+    net_r0: {
+      rpcServer: {
+        close () { ended.push('server') },
+        connections: new Set([{ end: () => ended.push('conn1') }, { end: () => ended.push('conn2') }])
+      }
+    }
+  })
+
+  const origStop = TetherWrkBase.prototype.stop
+  let baseStopped = 0
+  TetherWrkBase.prototype.stop = function (cb) {
+    baseStopped++
+    cb()
+  }
+  try {
+    w.stop(() => {})
+    t.is(w.interval_0.mem.size, 0)
+    t.is(w.scheduler_0.mem.size, 0)
+    t.alike(ended, ['server', 'conn1', 'conn2'])
+
+    delete w.interval_0
+    delete w.scheduler_0
+    delete w.net_r0
+    w.stop(() => {})
+    t.is(baseStopped, 2)
+  } finally {
+    TetherWrkBase.prototype.stop = origStop
+  }
+})
+
+test('WrkProcVar: handleRpcReply replies after net_r0 is removed mid-call', async t => {
+  const w = auditedWorker(mockLogger())
+  w.getRack = async () => {
+    delete w.net_r0
+    return { id: 'r' }
+  }
+
+  t.alike(await w.handleRpcReply('getRack', {}), { id: 'r' })
+})
+
 function createMockDb () {
   const sub = {
     get: async () => null,
@@ -2208,6 +2254,17 @@ test('WrkProcVar: _start master wires rpc db intervals and replica', async t => 
   t.absent(intervalAdds.find(a => a.name === 'setupThings'))
   t.ok(schedulerAdds.length >= 1)
   t.is(replicaStarted.length, 1)
+})
+
+test('WrkProcVar: _start rpc handlers reply ERR_WRK_STOPPING once stopping', async t => {
+  const { w, rpcHandlers } = buildStartWorker()
+  await runStart(w)
+
+  w.stopping = true
+  delete w.net_r0
+
+  t.is(await rpcHandlers.listThings({}), '[HRPC_ERR]=ERR_WRK_STOPPING')
+  t.is(await rpcHandlers.registerThing({}), '[HRPC_ERR]=ERR_WRK_STOPPING')
 })
 
 test('WrkProcVar: _start slave uses replica db and slave intervals', async t => {

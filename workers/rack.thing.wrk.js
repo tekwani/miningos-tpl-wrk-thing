@@ -167,20 +167,21 @@ class WrkProcVar extends TetherWrkBase {
   }
 
   async handleRpcReply (method, req) {
+    const net = this.net_r0
     let data
     try {
-      data = this.net_r0.parseInputJSON(req)
+      data = net.parseInputJSON(req)
     } catch (e) {
       this._auditLog(method, {}, { outcome: 'failure', error: e.message })
-      return this.net_r0.toOutJSON(`[HRPC_ERR]=${e.message}`)
+      return net.toOutJSON(`[HRPC_ERR]=${e.message}`)
     }
     try {
       const res = await this[method](data)
       this._auditLog(method, data, { detail: this._getAuditDetail(method, data, res) })
-      return this.net_r0.toOutJSON(res)
+      return net.toOutJSON(res)
     } catch (e) {
       this._auditLog(method, data, { outcome: 'failure', error: e.message })
-      return this.net_r0.toOutJSON(`[HRPC_ERR]=${e.message}`)
+      return net.toOutJSON(`[HRPC_ERR]=${e.message}`)
     }
   }
 
@@ -1637,6 +1638,21 @@ class WrkProcVar extends TetherWrkBase {
     return 1
   }
 
+  stop (cb) {
+    for (const fac of [this.interval_0, this.scheduler_0]) {
+      if (!fac) continue
+      for (const k of Array.from(fac.mem.keys())) fac.del(k)
+    }
+
+    const rpcServer = this.net_r0?.rpcServer
+    if (rpcServer) {
+      rpcServer.close()
+      for (const rpc of rpcServer.connections) rpc.end()
+    }
+
+    super.stop(cb)
+  }
+
   async buildStats (sk, fireTime) {
     // save real time data
     if (sk === STAT_RTD) {
@@ -1820,8 +1836,12 @@ class WrkProcVar extends TetherWrkBase {
 
         rpcServer.respond('echo', x => x)
 
+        const net = this.net_r0
         RPC_METHODS.forEach(method => {
           rpcServer.respond(method, async (req) => {
+            if (this.stopping) {
+              return net.toOutJSON('[HRPC_ERR]=ERR_WRK_STOPPING')
+            }
             if (AUDIT_METHODS.has(method)) {
               return this.handleRpcReply(method, req)
             }
