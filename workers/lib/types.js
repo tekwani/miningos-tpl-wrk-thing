@@ -228,7 +228,7 @@
 /**
  * Parameters for `getHistoricalLogs` RPC method
  * @typedef {Object} GetHistoricalLogsParams
- * @property {'alerts'|'info'} logType - Type of historical logs to retrieve
+ * @property {'alerts'|'info'|string} logType - Type of historical logs to retrieve; workers may add their own (e.g. the DCS worker's 'consumption')
  * @property {number} [offset=0] - Starting offset
  * @property {number} [limit=100] - Maximum entries
  * @property {number} [start] - Start timestamp
@@ -277,6 +277,13 @@
  * Parameters for `saveWrkSettings` RPC method
  * @typedef {Object} SaveWrkSettingsParams
  * @property {Object} entries - Settings entries to save
+ */
+
+/**
+ * Parameters for `saveHistoricalLog` RPC method
+ * @typedef {Object} SaveHistoricalLogParams
+ * @property {string} logType - Type of historical log to write
+ * @property {Object[]} [entries] - Entries to persist, shape defined by the overriding worker
  */
 
 // =============================================================================
@@ -435,6 +442,12 @@
  * underlying settings-save facility, whose return shape varies. Intentionally
  * untyped.
  * @typedef {*} SaveWrkSettingsResult
+ */
+
+/**
+ * Result for `saveHistoricalLog` RPC method. Undefined in the base worker;
+ * workers that own a writable historical log define their own result.
+ * @typedef {*} SaveHistoricalLogResult
  */
 
 // =============================================================================

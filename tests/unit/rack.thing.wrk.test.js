@@ -9,7 +9,7 @@ const WrkProcVar = require('../../workers/rack.thing.wrk')
 const lWrkFunLogs = require('../../workers/lib/wrk-fun-logs')
 const lWrkFunReplica = require('../../workers/lib/wrk-fun-replica')
 const lWrkFunSettings = require('../../workers/lib/wrk-fun-settings')
-const { STAT_RTD, RPC_METHODS } = require('../../workers/lib/constants')
+const { STAT_RTD, RPC_METHODS, AUDIT_METHODS } = require('../../workers/lib/constants')
 
 test('WrkProcVar: getThingType', async t => {
   // Create a minimal instance for testing
@@ -1476,7 +1476,22 @@ test('WrkProcVar: _getAuditDetail covers audit switch cases', async t => {
     query: { id: 't1' },
     all: true
   })
+  t.alike(w._getAuditDetail('saveHistoricalLog', { logType: 'consumption', entries: [{}, {}] }), {
+    logType: 'consumption',
+    upserted: 2
+  })
+  t.alike(w._getAuditDetail('saveHistoricalLog', { logType: 'consumption' }), {
+    logType: 'consumption',
+    upserted: 0
+  })
   t.alike(w._getAuditDetail('unknownMethod', {}), {})
+})
+
+test('WrkProcVar: saveHistoricalLog is an audited no-op rpc in the base worker', async t => {
+  const w = protoWorker()
+  t.ok(RPC_METHODS.includes('saveHistoricalLog'))
+  t.ok(AUDIT_METHODS.has('saveHistoricalLog'))
+  t.is(await w.saveHistoricalLog({ logType: 'consumption', entries: [{ ts: 0 }] }), undefined)
 })
 
 test('WrkProcVar: _loadOptionalConfigs skips missing configs', async t => {

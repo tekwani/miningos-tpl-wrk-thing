@@ -159,6 +159,8 @@ class WrkProcVar extends TetherWrkBase {
         return { method: req.method, query: req.query, affected: result }
       case 'saveWrkSettings':
         return { entryKeys: req.entries ? Object.keys(req.entries) : [] }
+      case 'saveHistoricalLog':
+        return { logType: req.logType, upserted: Array.isArray(req.entries) ? req.entries.length : 0 }
       default:
         return {}
     }
@@ -1187,6 +1189,18 @@ class WrkProcVar extends TetherWrkBase {
       return filteredLogs
     }
   }
+
+  /**
+   * Persists entries to a historical log. The base worker owns no writable
+   * historical log, so this is a no-op; workers that do override it.
+   * @method saveHistoricalLog
+   * @memberof WrkProcVar
+   * @param {Object} req - Request parameters
+   * @param {string} req.logType - Type of historical log to write
+   * @param {Object[]} [req.entries] - Entries to persist, shape defined by the overriding worker
+   * @returns {Promise<*>} Result defined by the overriding worker (undefined here)
+   */
+  async saveHistoricalLog (req) {}
 
   /**
    * Executes a method on multiple things matching a query filter.

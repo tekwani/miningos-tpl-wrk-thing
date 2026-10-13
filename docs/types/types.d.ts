@@ -457,9 +457,9 @@ export type TailLogParams = {
  */
 export type GetHistoricalLogsParams = {
     /**
-     * - Type of historical logs to retrieve
+     * - Type of historical logs to retrieve; workers may add their own (e.g. the DCS worker's 'consumption')
      */
-    logType: "alerts" | "info";
+    logType: "alerts" | "info" | string;
     /**
      * - Starting offset
      */
@@ -527,6 +527,19 @@ export type SaveWrkSettingsParams = {
      * - Settings entries to save
      */
     entries: any;
+};
+/**
+ * Parameters for `saveHistoricalLog` RPC method
+ */
+export type SaveHistoricalLogParams = {
+    /**
+     * - Type of historical log to write
+     */
+    logType: string;
+    /**
+     * - Entries to persist, shape defined by the overriding worker
+     */
+    entries?: any[];
 };
 /**
  * Log entry from tailLog
@@ -688,6 +701,11 @@ export type GetWrkSettingsResult = WrkSettings;
  * untyped.
  */
 export type SaveWrkSettingsResult = any;
+/**
+ * Result for `saveHistoricalLog` RPC method. Undefined in the base worker;
+ * workers that own a writable historical log define their own result.
+ */
+export type SaveHistoricalLogResult = any;
 /**
  * - Operation blocked on slave/replica nodes
  */

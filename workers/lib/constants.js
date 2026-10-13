@@ -21,6 +21,7 @@ const RPC_METHODS = [
   'applyThings',
   'tailLog',
   'getHistoricalLogs',
+  'saveHistoricalLog',
   'getReplicaConf',
   'rackReboot',
   'getWrkExtData',
@@ -40,6 +41,7 @@ const AUDIT_METHODS = new Set([
   'editThingComment',
   'deleteThingComment',
   'saveWrkSettings',
+  'saveHistoricalLog',
   'rackReboot'
 ])
 
